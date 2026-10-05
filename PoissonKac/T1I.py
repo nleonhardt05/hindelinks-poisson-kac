@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Deff. Params.
-N = 5000       # Number of random reversal events
-T = 1000.0     # Total time interval
-mu = N / T     # Average event rate (events per unit time)
+N = 5000       #Number of random reversal events
+T = 1000.0     #Total time interval
+mu = N / T     #Average event rate (events per unit time)
 
 
 reversal_times = np.random.uniform(0, T, N)
