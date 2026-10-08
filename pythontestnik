@@ -1,6 +1,0 @@
-import numpy as np 
-print(np.pi)
-
-s = 4
-
-print(3*s)
