@@ -41,7 +41,7 @@ With the algorithm from Task 4 at hand, you now have a method to generate a traj
 Let the atom start at $x(0)=x_0 \in [0,L]$ with positive velocity $v=s$. Generate a trajectory $x(t)$ that terminates if the particle reaches either $x\le 0$ or $x\ge L$. Using many (2000) of such trajectory realizations, calculate the probability $\pi_+^{(L)}(x_0)$ that the particle exits the interval at $x=L$ before reaching $x=0$. Similarly, calculate probability $\pi_+^{(0)}(x_0)$ that the particle exists the interval at $x=0$. Moreover, calculate the two corresponding probabilities $\pi_-^{(L)}(x_0)$ and $\pi_-^{(0)}(x_0)$ if the particle starts with negative velocity $v=-s$. 
 Plot $\pi_+^{(L)}(x_0)$ as function of $x_0$ for some fixed $\mu$ and $L$. Verify the analytical predictions
 
- $$\pi_+^{(L)}(x_0) = 1-\pi_+^{(0)}(x_0) = \pi_-^{(0)}(L-x_0) = 1 - \pi_-^{(L)}(L-x_0) = \frac{s+\mu x_0}{s+\mu L}$$, 
+ $\pi_+^{(L)}(x_0) = 1-\pi_+^{(0)}(x_0) = \pi_-^{(0)}(L-x_0) = 1 - \pi_-^{(L)}(L-x_0) = \frac{s+\mu x_0}{s+\mu L}$, 
 
  for $L=10$, $\mu=2$, $s=1$, $\Delta t=0.01$, as function of $x_0$ between $0$ and $L$, and argue why it was not needed to calculate all four probabilities. 
 
