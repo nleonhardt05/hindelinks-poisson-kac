@@ -27,10 +27,10 @@ berechnet = revearse / n
 
 print (f"Berechnet: {berechnet}  Vorlage: {probability}")
 
-plt.plot(positions, color = 'black', marker="o", markerfacecolor="black", markeredgecolor="blue",
-          markersize=3, linewidth=1)
+plt.plot(positions, color = 'black', marker="o", markerfacecolor="black", markeredgecolor="blue", markersize=3, linewidth=1)
 plt.title('Task 4')
 plt.xlabel("Time")
 plt.ylabel("Position")
+plt.grid()
 plt.show
 
