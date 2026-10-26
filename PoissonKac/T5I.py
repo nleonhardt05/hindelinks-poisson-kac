@@ -21,7 +21,7 @@ def simulate_trajectory(x0, initial_v):
             v = -v
         pos += v * dt
 
-    return 1 if pos >= L else 0 # Return 1 if it exited at L, 0 if it exited at 0
+    return 1 if pos >= L else 0 #Return 1 if it exited at L, 0 if it exited at 0
 
 #different x0 vals.
 x0_values = np.linspace(0.1, L - 0.1, 20)
