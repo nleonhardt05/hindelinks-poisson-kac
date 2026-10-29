@@ -4,9 +4,10 @@ import matplotlib
 
 # Interaktives Fenster (vor dem Import von pyplot). Im normalen Start auf dem Mac: MacOSX.
 try:
-    _ip = get_ipython()                      # nur im Interactive Window / IPython definiert
+    _ip = get_ipython()
 except NameError:
     _ip = None
+
 if _ip is not None:
     try:
         _ip.run_line_magic("matplotlib", "osx")
@@ -14,7 +15,7 @@ if _ip is not None:
         pass
 else:
     import sys
-    if sys.platform == "darwin":             # nur auf dem Mac erzwingen
+    if sys.platform == "darwin":
         matplotlib.use("MacOSX", force=True)
 
 import matplotlib.pyplot as plt
@@ -25,17 +26,16 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 from pathlib import Path
 
 MU, S, DT = 0.5, 1.0, 0.5
-T_MAX = 5.0 / MU                       # Laenge einer Realisierung: t < 5/mu = 10
-N_STEPS = int(round(T_MAX / DT))       # 20 Schritte -> t = 0 ... 9.5
+T_MAX = 5.0 / MU
+N_STEPS = int(round(T_MAX / DT))
 T = np.arange(N_STEPS) * DT
-MAX_FRAMES = None                      # nur zum Testen: z.B. 200, sonst None
+MAX_FRAMES = None
 
 rng = np.random.default_rng()
 
 
 def generate_velocities(n):
-    """Eine stationaere Realisierung (Annahme: OU-Geschwindigkeit, exaktes Update).
-    <-- Hier ggf. deinen Task-4-Algorithmus einsetzen."""
+    """Eine stationaere Realisierung (Annahme: OU-Geschwindigkeit, exaktes Update)."""
     a = np.exp(-2.0 * MU * DT)
     b = S * np.sqrt(1.0 - a * a)
     v = np.empty(n)
@@ -48,7 +48,10 @@ def generate_velocities(n):
 def autocorr(v):
     """C_v(j dt) = 1/(N-j) * sum_{k=1}^{N-j} v_k v_{k+j}"""
     n = len(v)
-    return np.array([np.dot(v[: n - j], v[j:]) / (n - j) for j in range(n)])
+    return np.array([
+        np.dot(v[:n - j], v[j:]) / (n - j)
+        for j in range(n)
+    ])
 
 
 def main():
@@ -56,24 +59,46 @@ def main():
     fig.subplots_adjust(bottom=0.22)
 
     tf = np.linspace(0, T[-1], 400)
-    ax.plot(tf, S**2 * np.exp(-2 * MU * tf), color="tab:blue", lw=2.5,
-            label=r"erwartet: $s^2 e^{-2\mu t}$")
-    (line,) = ax.plot(T, np.zeros(N_STEPS), "-o", color="k", ms=6, lw=1,
-                      label="gemessen (gemittelt)")
+    ax.plot(
+        tf,
+        S**2 * np.exp(-2 * MU * tf),
+        color="tab:blue",
+        lw=2.5,
+        label=r"erwartet: $s^2 e^{-2\mu t}$"
+    )
+
+    (line,) = ax.plot(
+        T, np.zeros(N_STEPS), "-o",
+        color="k", ms=6, lw=1,
+        label="gemessen (gemittelt)"
+    )
+
     ax.axhline(0, color="gray", lw=0.6)
     ax.set_xlim(0, T_MAX)
     ax.set_ylim(-0.4, 1.2)
     ax.set_xlabel(r"$t$")
     ax.set_ylabel(r"$C_v(t)$")
     ax.legend(loc="upper right")
-    txt = ax.text(0.97, 0.62, "Frame 0", transform=ax.transAxes,
-                  ha="right", va="top", fontsize=13)
+
+    txt = ax.text(
+        0.97, 0.62, "Frame 0",
+        transform=ax.transAxes,
+        ha="right", va="top", fontsize=13
+    )
 
     btn_ax = fig.add_axes([0.40, 0.04, 0.20, 0.09])
-    btn = Button(btn_ax, "STOP", color="#f4b6b6", hovercolor="#e57373")
+    btn = Button(
+        btn_ax, "STOP",
+        color="#f4b6b6",
+        hovercolor="#e57373"
+    )
+
     state = {"stop": False}
     btn.on_clicked(lambda _e: state.update(stop=True))
-    fig.canvas.mpl_connect("close_event", lambda _e: state.update(stop=True))
+    fig.canvas.mpl_connect(
+        "close_event",
+        lambda _e: state.update(stop=True)
+    )
 
     plt.ion()
     plt.show(block=False)
@@ -81,33 +106,36 @@ def main():
     c_sum = np.zeros(N_STEPS)
     m = 0
 
-    # ADDED: store the curve after every realization
+    # Store the averaged curve after every realization
     c_history = []
 
     while not state["stop"]:
         m += 1
         c_sum += autocorr(generate_velocities(N_STEPS))
-        line.set_ydata(c_sum / m)
+
+        current_cv = c_sum / m
+        line.set_ydata(current_cv)
         txt.set_text(f"Frame {m}")
 
-        # ADDED: save each intermediate averaged curve
-        c_history.append((c_sum / m).copy())
+        c_history.append(current_cv.copy())
 
         fig.canvas.draw_idle()
         fig.canvas.flush_events()
-        plt.pause(0.02)                    # laesst das Fenster neu zeichnen + Klicks zu
+        plt.pause(0.02)
+
         if MAX_FRAMES and m >= MAX_FRAMES:
             break
 
     print(f"Gestoppt nach {m} Realisierungen.")
-    print("C_v(0) gemessen:", (c_sum / m)[0], " erwartet:", S**2)
 
-    # ADDED: create the images directory if necessary
-    output_dir = Path("images")
+    final_cv = c_sum / m
+    print("C_v(0) gemessen:", final_cv[0], " erwartet:", S**2)
+
+    # FIX: use the repository path instead of the read-only directory
+    output_dir = Path.home() / "hindelinks-poisson-kac" / "images"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # ADDED: save final t and Cv(t) values to CSV
-    final_cv = c_sum / m
+    # Save final t and Cv(t) values to CSV
     np.savetxt(
         output_dir / "Cv.csv",
         np.column_stack((T, final_cv)),
@@ -117,7 +145,7 @@ def main():
     )
     print(f"CSV saved to: {output_dir / 'Cv.csv'}")
 
-    # ADDED: create a movie from the stored realizations
+    # Create a movie from the stored realizations
     def update_animation(frame):
         line.set_ydata(c_history[frame])
         txt.set_text(f"Frame {frame + 1}")
@@ -132,7 +160,7 @@ def main():
         blit=False
     )
 
-    # ADDED: save the animation as a GIF
+    # Save the animation as a GIF
     animation.save(
         output_dir / "Cv_evolution.gif",
         writer=PillowWriter(fps=10)
