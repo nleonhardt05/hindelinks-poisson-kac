@@ -4,7 +4,7 @@ import matplotlib
 
 # Interaktives Fenster (vor dem Import von pyplot). Im normalen Start auf dem Mac: MacOSX.
 try:
-    _ip = get_ipython()
+    _ip = get_ipython()                      # nur im Interactive Window / IPython definiert
 except NameError:
     _ip = None
 
@@ -15,27 +15,28 @@ if _ip is not None:
         pass
 else:
     import sys
-    if sys.platform == "darwin":
+    if sys.platform == "darwin":             # nur auf dem Mac erzwingen
         matplotlib.use("MacOSX", force=True)
 
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 
-# ADDED: saving the animation
+# ADDED: saving the animation and CSV
 from matplotlib.animation import FuncAnimation, PillowWriter
 from pathlib import Path
 
 MU, S, DT = 0.5, 1.0, 0.5
-T_MAX = 5.0 / MU
-N_STEPS = int(round(T_MAX / DT))
+T_MAX = 5.0 / MU                       # Laenge einer Realisierung: t < 5/mu = 10
+N_STEPS = int(round(T_MAX / DT))       # 20 Schritte -> t = 0 ... 9.5
 T = np.arange(N_STEPS) * DT
-MAX_FRAMES = None
+MAX_FRAMES = None                      # nur zum Testen: z.B. 200, sonst None
 
 rng = np.random.default_rng()
 
 
 def generate_velocities(n):
-    """Eine stationaere Realisierung (Annahme: OU-Geschwindigkeit, exaktes Update)."""
+    """Eine stationaere Realisierung (Annahme: OU-Geschwindigkeit, exaktes Update).
+    <-- Hier ggf. deinen Task-4-Algorithmus einsetzen."""
     a = np.exp(-2.0 * MU * DT)
     b = S * np.sqrt(1.0 - a * a)
     v = np.empty(n)
@@ -49,7 +50,7 @@ def autocorr(v):
     """C_v(j dt) = 1/(N-j) * sum_{k=1}^{N-j} v_k v_{k+j}"""
     n = len(v)
     return np.array([
-        np.dot(v[:n - j], v[j:]) / (n - j)
+        np.dot(v[: n - j], v[j:]) / (n - j)
         for j in range(n)
     ])
 
@@ -106,7 +107,7 @@ def main():
     c_sum = np.zeros(N_STEPS)
     m = 0
 
-    # Store the averaged curve after every realization
+    # ADDED: store the averaged curve after every realization
     c_history = []
 
     while not state["stop"]:
@@ -117,11 +118,12 @@ def main():
         line.set_ydata(current_cv)
         txt.set_text(f"Frame {m}")
 
+        # Save each intermediate averaged curve for the GIF
         c_history.append(current_cv.copy())
 
         fig.canvas.draw_idle()
         fig.canvas.flush_events()
-        plt.pause(0.02)
+        plt.pause(0.02)                    # laesst das Fenster neu zeichnen + Klicks zu
 
         if MAX_FRAMES and m >= MAX_FRAMES:
             break
@@ -131,11 +133,16 @@ def main():
     final_cv = c_sum / m
     print("C_v(0) gemessen:", final_cv[0], " erwartet:", S**2)
 
-    # FIX: use the repository path instead of the read-only directory
-    output_dir = Path.home() / "hindelinks-poisson-kac" / "images"
+    # ADDED: save files in the correct repository directory
+    output_dir = (
+        Path.home()
+        / "hindelinks-poisson-kac"
+        / "PoissonKac"
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
+    print("Saving results to:", output_dir)
 
-    # Save final t and Cv(t) values to CSV
+    # ADDED: save final t and Cv(t) values to CSV
     np.savetxt(
         output_dir / "Cv.csv",
         np.column_stack((T, final_cv)),
@@ -143,9 +150,10 @@ def main():
         header="t,Cv",
         comments=""
     )
+
     print(f"CSV saved to: {output_dir / 'Cv.csv'}")
 
-    # Create a movie from the stored realizations
+    # ADDED: create a movie from the stored realizations
     def update_animation(frame):
         line.set_ydata(c_history[frame])
         txt.set_text(f"Frame {frame + 1}")
@@ -160,7 +168,7 @@ def main():
         blit=False
     )
 
-    # Save the animation as a GIF
+    # ADDED: save the animation as a GIF
     animation.save(
         output_dir / "Cv_evolution.gif",
         writer=PillowWriter(fps=10)
