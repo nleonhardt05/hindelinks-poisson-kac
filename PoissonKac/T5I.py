@@ -7,7 +7,7 @@ L = 10
 mu = 2
 s = 1
 dt = 0.01
-num_realizations = 20 #Use 2000 for final results, but 20 for quick testing
+num_realizations = 2000
 
 #Calculated Prob.
 p_flip = 1 - np.exp(-mu * dt)
@@ -51,4 +51,5 @@ plt.xlim(0, L)
 plt.ylim(0, 1.05)
 plt.grid(True, linestyle=':')
 plt.legend()
+plt.savefig("T5I.png")
 plt.show()
