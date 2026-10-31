@@ -29,4 +29,6 @@ plt.ylabel('Probability Density')
 plt.legend()
 plt.grid(True)
 
+plt.savefig("T1I.png")
 plt.show()
+
