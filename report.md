@@ -1,37 +1,43 @@
 Group report 
 
-# Project title 
+# Project 4 
 
-Describe the task in your own words, and/or link to the task description. 
+A particle starts with positive velocity and after constant time intervalls, the velocity can flip its direction with the probability of $1 - np.exp(-mu *dt)$, dt being the time intervall and mu being the rate. 
 
 ## Layout of the algorithm, functions to be created
 
-Name the most important functions and mention their functionality, i.e., input and output.
+First all parameters have to get initialized, with the probaility being $1 - np.exp(-mu *dt)$, dt being the time intervall and mu being the rate. Another step is the amount of times $n$, the time intervall should pass through, is initialized.
 
-      def myroutine(var1,var2):
-          # does the following ...
-          return ...
+In the second step, in a for loop with the fixed probability, the velocity changes directions and the current position is noted.
 
 ## How to run the code
 
-Mention, how to run the code. Mention the parameters, in case your code has command line arguments. 
+python3 T4N.py
 
-      python3 mycode.py
-      python3 mycode,py arg1 arg2 
+'numpy' and 'matplotlib.pyplot' are necessary.
 
-where arg1 and arg2 are ...
+v : velocity
+n : ampunt of steps
+$mu$ : rate 
+dt = $1/(4*mu)$ : time intervall
+probability of return : $1 - np.exp(-mu *dt)$
+revearse : counter for amount of revearses
+positions : list of positions for the plot
+pos : starting position is zero
+
+
 
 ## Resulting files
 
-Mention any resulting files and their format and meaning. 
+In the end the expected theoretical velocity change probability is compared to the actuall velocity change ratio. Furthermore, a plot of all the positions is shown.
 
 ## Successful tests
 
-Summarize, which tests have been successfully passed to test your code. 
+The actual probability matches witch the theoretical probability
 
 ## Problems
 
-Keep track of problems and yet unanswered questions so that all group members know where to focus next. 
+No big problems apart from the inexperience with GitHub
 
 ## Results (speed tests etc.)
 
