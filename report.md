@@ -16,14 +16,14 @@ python3 T4N.py
 
 'numpy' and 'matplotlib.pyplot' are necessary.
 
-v : velocity
-n : ampunt of steps
-$mu$ : rate 
-dt = $1/(4*mu)$ : time intervall
-probability of return : $1 - np.exp(-mu *dt)$
-revearse : counter for amount of revearses
-positions : list of positions for the plot
-pos : starting position is zero
+v : velocity.   
+n : ampunt of steps.   
+$mu$ : rate.   
+dt = $1/(4*mu)$ : time intervall.   
+probability of return : $1 - np.exp(-mu *dt)$.   
+revearse : counter for amount of revearses.   
+positions : list of positions for the plot.   
+pos : starting position is zero.   
 
 
 
