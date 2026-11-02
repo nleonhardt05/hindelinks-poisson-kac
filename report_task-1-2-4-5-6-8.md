@@ -146,6 +146,61 @@ No big problems apart from the inexperience with GitHub
 The measured probability agrees with the predetermined probability within statistical fluctuation.     
 The plot of the position can be shown localy with plt.show()
 
+---
+# Task 3 – Poisson-Kac trajectory on an equidistant time grid
+
+Simulate a particle that moves at constant speed $s$ and reverses its velocity at random times with rate $\mu$. The trajectory is built at the event times $t=0,\tau_1,\tau_1+\tau_2,\dots$ and at the equidistant times $t_j=j\Delta t$, and both are plotted on top of each other to test the algorithm.
+
+## Layout of the algorithm, functions to be created
+
+No function is defined in `T3I.py`; the script works as follows:
+
+1. Set the parameters `s`, `m` ($\mu$), `N` and `delta_t = 0.25/m`, and the start values $x(0)=0$, $t=0$, $v=s>0$.
+2. For each of the `N` reversal events, draw `P = rng.random()` and compute $\tau=-\ln(1-P)/\mu$.
+3. Move the particle to the event: $t_k=t_{k-1}+\tau$, $x_k=x_{k-1}+v\tau$. Both are stored in the array `Ereignis` (row 0: times, row 1: positions).
+4. Fill the grid: while `t_g < t_k`, store $x(t_g)=x_{k-1}+v\,(t_g-t_{k-1})$ in the list `Gleichmässig` and set `t_g += delta_t`.
+5. Reverse the velocity, $v\to -v$ (`s = -s`), and repeat from step 2.
+6. Plot the grid trajectory (dots) and the event trajectory (open circles) in one figure.
+
+## How to run the code
+
+      python3 T3I.py
+
+Requires `numpy` and `matplotlib`; no command-line arguments. Parameters at the top of the script:
+
+| Parameter | Meaning | Value |
+|---|---|---|
+| `N` | number of velocity reversal events | 40 |
+| `m` | reversal rate $\mu$ | 10 |
+| `s` | speed (its sign is flipped at every event) | 1 |
+| `delta_t` | time increment $\Delta t = 0.25/\mu$ | 0.025 |
+
+## Resulting files
+
+| File | Format | Meaning |
+|---|---|---|
+| T3I.png | PNG | Plot of $x(t)$ with dots at $t_j=j\Delta t$ and circles at the reversal events, opened by `plt.show()`;|
+
+## Successful tests
+
+- The grid points lie exactly on the straight segments between the event points.
+- The total time is $T\approx N/\mu=4$, which matches the time axis of the example plot.
+
+## Problems
+
+- `x` and `y` can differ in length by one because of rounding (`t_g += delta_t` vs. `np.arange`).
+- No random seed is set, so every run produces a different trajectory.
+
+
+## Results
+
+Parameters: $N=40$, $\mu=10$, $s=1$, $\Delta t=0.025$. The result is a piecewise linear trajectory $x(t)$ over roughly $t\in[0,4]$.
+
+Explanation: The waiting times between reversals are exponentially distributed, $p(\tau)=\mu e^{-\mu\tau}$ (Task 1). Inverting $P=1-e^{-\mu\tau}$ gives $\tau=-\ln(1-P)/\mu$. Between two events the motion is at constant velocity, so the position is known exactly:
+
+$$x(t)=x_{k-1}+v_k\,(t-t_{k-1}),\qquad v_k=(-1)^{k-1}s.$$
+
+Evaluating this at $t_j=j\Delta t$ involves no approximation, so the grid points lie exactly on the lines through the event points, which confirms the algorithm.
 
 ---
 # Task 5 – Exit probability $\pi_+^{(L)}(x_0)$
