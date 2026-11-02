@@ -100,7 +100,52 @@ Parameters: $\mu=2$, $N=1000$.
 
 The normalized histogram of the generated times follows the theoretical curve $\mu e^{-\mu\tau}$. With only 1000 samples and 100 bins the histogram fluctuates visibly, especially in the tail.
 
-Explanation: If $p$ is uniformly distributed in $[0,1)$, then $\tau = F^{-1}(p)$ has exactly the distribution with CDF $F$. For $F(\tau)=1-e^{-\mu\tau}$ the inverse is $\tau=-\ln(1-p)/\mu$. In contrast to Task 1, the times are independent and exactly exponentially distributed for every $N$, not only in the limit $N\to\infty$.
+Explanation: If $p$ is uniformly distributed in $[0,1)$, then $\tau = F^{-1}(p)$ has exactly the distribution with CDF $F$. For $F(\tau)=1-e^{-\mu\tau}$ the inverse is $\tau=-\ln(1-p)/\mu$. In contrast to Task 1, the times are independent and exactly exponentially distributed for every $N$, not only in the limit $N\to\infty$.    
+
+
+
+# Project 4  fixed time intervall with probability of return
+
+A particle starts with positive velocity and after constant time intervalls, the velocity can flip its direction with the probability of $1 - np.exp(-mu *dt)$, dt being the time intervall and mu being the rate. 
+
+## Layout of the algorithm, functions to be created
+
+First all parameters have to get initialized, with the probaility being $1 - np.exp(-mu *dt)$, dt being the time intervall and mu being the rate. Another step is the amount of times $n$, the time intervall should pass through, is initialized.
+
+In the second step, in a for loop with the fixed probability, the velocity changes directions and the current position is noted.
+
+## How to run the code
+
+python3 T4N.py
+
+'numpy' and 'matplotlib.pyplot' are necessary.
+
+v : velocity.   
+n : ampunt of steps.   
+$mu$ : rate.   
+dt = $1/(4*mu)$ : time intervall.   
+probability of return : $1 - np.exp(-mu *dt)$.   
+revearse : counter for amount of revearses.   
+positions : list of positions for the plot.   
+pos : starting position is zero.   
+
+## Resulting files
+
+In the end the expected theoretical velocity change probability is compared to the actuall velocity change ratio. Furthermore, a plot of all the positions is shown.
+
+## Successful tests
+
+The actual probability matches witch the theoretical probability
+
+## Problems
+
+No big problems apart from the inexperience with GitHub
+
+## Results (speed tests etc.)
+
+The measured probability agrees with the predetermined probability within statistical fluctuation.     
+The plot of the position can be shown localy with plt.show()
+
 
 ---
 # Task 5 – Exit probability $\pi_+^{(L)}(x_0)$
