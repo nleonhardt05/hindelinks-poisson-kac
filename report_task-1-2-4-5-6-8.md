@@ -334,6 +334,67 @@ $$\frac{\pi_+^{(L)}+\pi_-^{(L)}}{2}L-x_0=\frac{L(s+2\mu x_0)}{2(s+\mu L)}-x_0=\f
 The $\mu$-dependent terms cancel, so only the slope $-s/(s+\mu L)$ remains.
 
 ---
+# Task 7 – Velocity autocorrelation function of a Poisson-Kac trajectory
+
+Generate a long trajectory with constant time step $\Delta t$ until the particle reaches a boundary of $[0,L]$, store the velocity $v_j$ at every step, and calculate the velocity autocorrelation function $C_v(j\Delta t)$ from it. The result is compared with the theoretical prediction $C_v(t)=s^2e^{-2\mu t}$.
+
+## Layout of the algorithm, functions to be created
+
+No function is defined in `T7I.py`; the script works as follows:
+
+1. Set the parameters `s`, `mu` ($\mu$), `L`, `dt` ($\Delta t$), `x_0` and the start velocity `v = s`. Compute the reversal probability per step `probability = 1 - exp(-mu*dt)`.
+2. Generate the trajectory: while `0 < pos < L`, reverse the velocity (`v = -v`) if `rng.random() < probability`, move the particle by `pos += v*dt`, and append `v` to the list `velocity`.
+3. Calculate the autocorrelation for `n_lags = 40` lags: for every start index $k$ and every lag $j$, add $v_k v_{k+j}$ to `C_v[j]` (double loop over `i` and `j`).
+4. Normalize with the number of start indices, `C_v /= len(velocity) - n_lags`.
+5. Build the time axis $t=j\Delta t$ and the theoretical curve $s^2e^{-2\mu t}$.
+6. Plot the measured $C_v(t)$ (dots) and the theoretical curve (line) in one figure.
+
+## How to run the code
+
+      python3 T7I.py
+
+Requires `numpy` and `matplotlib`; no command-line arguments. Parameters at the top of the script:
+
+| Parameter | Meaning | Value |
+|---|---|---|
+| `s` | speed (and start velocity) | 1 |
+| `mu` | reversal rate $\mu$ | 0.5 |
+| `L` | length of the interval, the trajectory ends at $x=0$ or $x=L$ | 3000 |
+| `dt` | constant time step $\Delta t$ | 0.5 |
+| `x_0` | start position | 50 |
+| `probability` | reversal probability per step, $1-e^{-\mu\Delta t}$ | ≈ 0.221 |
+| `n_lags` | number of lags $j$ for which $C_v$ is calculated | 40 (i.e. $t<20$) |
+
+## Resulting files
+
+| File | Format | Meaning |
+|---|---|---|
+| T7I.png | PNG | Plot of the measured $C_v(t)$ (dots) and $s^2e^{-2\mu t}$ (line), opened by `plt.show()`;|
+
+## Successful tests
+
+- $C_v(0)=1=s^2$ exactly, because $v_k^2=s^2$ at every step.
+- The measured $C_v(t)$ decays quickly and then fluctuates around zero for $t\gtrsim 5$, as in the example plot.
+- The trajectory is long (estimated $N\sim10^5$ steps from the mean exit time $x_0(L-x_0)/2D$ with $D=s^2/2\mu=1$), so the statistical noise of $C_v$ is small.
+
+## Problems
+
+- The sampled values decay slightly faster than the prediction. With a reversal probability $p=1-e^{-\mu\Delta t}$ per step, one gets exactly $C_v(j\Delta t)=(1-2p)^j=(2e^{-\mu\Delta t}-1)^j\approx0.558^j$, while the theory gives $e^{-2\mu\Delta t\,j}=0.607^j$. The exact probability of an odd number of events in $\Delta t$ would be $p=(1-e^{-2\mu\Delta t})/2\approx0.197$, which reproduces $e^{-2\mu t}$ exactly. This is a discretization effect of the algorithm, not a statistical error.
+- The double Python loop (about $N\cdot 40$ iterations) is slow;
+- No random seed is set, so every run produces a different trajectory and slightly different noise.
+
+## Results
+
+Parameters: $x_0=50$, $\mu=0.5$, $s=1$, $L=3000$, $\Delta t=0.5$, $n_{\text{lags}}=40$. The measured $C_v(t)$ starts at $C_v(0)=1$, decays approximately exponentially and is close to zero for $t>5$. It agrees with $s^2e^{-2\mu t}$ up to the small discretization deviation described above and statistical noise.
+
+Explanation: The velocity is $v=\pm s$, and it flips at the event times of a Poisson process with rate $\mu$. The correlation of $v(t)v(0)$ is $s^2$ times the expectation of $(-1)^{n}$, where $n$ is the number of events in $[0,t]$ and Poisson distributed with mean $\mu t$:
+
+$$C_v(t)=s^2\sum_{n}(-1)^n\frac{(\mu t)^n}{n!}e^{-\mu t}=s^2e^{-2\mu t}.$$
+
+The time average $\frac{1}{N-j}\sum_k v_kv_{k+j}$ over one long trajectory estimates this expectation value. Integrating the prediction gives the diffusion coefficient
+
+$$D=\int_0^\infty C_v(t)\,dt=\frac{s^2}{2\mu}=1.$$
+---
 # Task 8 – Velocity autocorrelation function $C_v(t)$
 
 Generate velocity time series $v_k$ on a grid with time step $\Delta t$, compute their autocorrelation function $C_v(j\Delta t)$, average it over many realizations and compare it with the analytical prediction $C_v(t)=s^2e^{-2\mu t}$.
