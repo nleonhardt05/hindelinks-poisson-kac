@@ -21,7 +21,6 @@ else:
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 
-# ADDED: saving the animation and CSV
 from matplotlib.animation import FuncAnimation, PillowWriter
 from pathlib import Path
 
